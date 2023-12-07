@@ -1,166 +1,129 @@
-# TrollStore
+# 巨魔商店
 
-TrollStore is a permasigned jailed app that can permanently install any IPA you open in it.
+TrollStore 是一个永久签名的监禁应用程序，可以永久安装您在其中打开的任何 IPA。
 
-It works because of an AMFI/CoreTrust bug where iOS doesn't verify whether or not a root certificate used to sign a binary is legit.
+它之所以有效，是因为 AMFI/CoreTrust 错误，其中 iOS 不会验证用于签署二进制文件的根证书是否合法。
 
-## Compatibility
+## 安装 TrollStore
 
-TrollStore works on **iOS 14.0 - 15.4.1**, on **iOS 15.5 beta 1 - iOS 15.5 beta 4** and on **iOS 15.6 beta 1 - iOS 15.6 beta 5**.
+### 安装指南
 
-iOS 15.5 RC / full build is **NOT** supported.
+| 版本/设备 | ARM64（A8 - A11）| ARM64E（A12-A17，M1-M2）|
+| ---| ---| ---|
+| 13.7 及以下 | 不支持（这两个 CT Bug 仅在 14.0 中引入）|
+| 14.0 - 14.8.1 | [checkra1n + TrollHelper](./install_trollhelper.md) | [TrollHelperOTA (arm64e)](./install_trollhelperota_arm64e.md) |
+| 15.0 - 15.4.1 | [TrollHelperOTA (iOS 15+)](./install_trollhelperota_ios15.md)  [TrollHelperOTA (iOS 15+)](./install_trollhelperota_ios15.md) |
+| 15.5 测试版 1 - 4 | [TrollHelperOTA (iOS 15+)](./install_trollhelperota_ios15.md)  [TrollHelperOTA (iOS 15+)](./install_trollhelperota_ios15.md) |
+| 15.5 | 15.5 即将推出 | 即将推出 |
+| 15.6 测试版 1 - 5 | [TrollHelperOTA (iOS 15+)](./install_trollhelperota_ios15.md) | [TrollHelperOTA (iOS 15+)](./install_trollhelperota_ios15.md) |
+| 15.6 - 16.5 | 15.6 - 16.5 即将推出 | 即将推出 |
+| 16.5.1 - 16.6.1 | 即将推出 | 无安装方法 |
+| 16.7 - 16.7.2 | 不支持（已修复两个 CT 错误）| 不支持（已修复两个 CT 错误）|
+| 17.0 | 17.0 即将推出 | 无安装方法 |
+| 17.0.1 及更新版本 | 不支持（已修复两个 CT 错误）| 不支持（已修复两个 CT 错误）|
 
-Anything higher than iOS 15.6 beta 5 (including iOS 15.6 RC / full build) is **NOT** supported.
+由于发现了新的 CoreTrust 漏洞，未来将添加对 15.5 - 16.6.1 和 17.0 的支持。如果您需要 TrollStore，请继续使用这些版本。16.7 和 17.0.1+ 将永远不受支持（除非 Apple 第三次搞砸 CoreTrust...）。
 
-Anything lower than iOS 14.0 is **NOT** supported.
+## 更新 TrollStore
 
-Anything not supported right now will **_NEVER_** be supported, TrollStore is a one time thing, it will not receive compatibility updates in the future, please **stop asking** about it, GitHub issues regarding version support will be **closed without an answer**.
+当新的 TrollStore 更新可用时，安装该更新的按钮将出现在 TrollStore 设置的顶部。点击按钮后，TrollStore 将自动下载更新、安装并重新启动。
 
-## Installing TrollStore (No Jailbreak)
+或者（如果出现任何问题），您可以在 Releases 下下载 TrollStore.tar 文件并在 TrollStore 中打开它，TrollStore 将安装更新并重新启动。
 
-### Installation Links
+## 卸载应用程序
 
-[TrollHelperOTA Link 1 - Supports all devices on iOS 15 and up](https://api.jailbreaks.app/troll)
+从 TrollStore 安装的应用程序只能从 TrollStore 本身卸载，点击应用程序或在“应用程序”选项卡中向右滑动即可将其删除。
 
-[TrollHelperOTA Link 2 - Supports all arm64e (A12 - A15) devices on iOS 14 and up](https://api.jailbreaks.app/troll64e)
+## 持久化助手
 
-Please refer to "Compatibility" above to check whether your version is compatible, if it's not, these links will not work.
+TrollStore 中使用的 CoreTrust 错误仅足以安装“系统”应用程序，这是因为 FrontBoard 每次在启动用户应用程序之前都会进行额外的安全检查（它调用 libmis）。不幸的是，无法安装通过图标缓存重新加载而保留的新“系统”应用程序。因此，当 iOS 重新加载图标缓存时，所有 TrollStore 安装的应用程序（包括 TrollStore 本身）都将恢复为“用户”状态，并且将不再启动。
 
-This installation method unfortunately does **NOT** work on arm64 (A8 - A11) iOS 14 devices. **HOWEVER**, for these devices, you can jailbreak with checkra1n and then use the jailbroken installation guide below.
+解决此问题的唯一方法是将持久性助手安装到系统应用程序中，然后可以使用该助手将 TrollStore 及其安装的应用程序重新注册为“系统”，以便它们再次可启动，TrollStore 中提供了此选项设置。
 
-### Guide (No Jailbreak)
+在越狱的 iOS 14 上，当使用 TrollHelper 进行安装时，它位于 /Applications 中，并将通过图标缓存重新加载作为“系统”应用程序持续存在，因此 TrollHelper 被用作 iOS 14 上的持久性助手。
 
-1. Based on what device you are using, pick one of the two links above and open it.
+## URL方案
 
-2. An alert should appear, tap "Install"
+从版本 1.3 开始，TrollStore 取代了系统 URL 方案“apple-magnifier”（这样做是为了“越狱”检测无法像 TrollStore 具有唯一的 URL 方案那样检测到 TrollStore）。此 URL 方案可用于直接从浏览器安装应用程序，格式如下：
 
-3. When the installation is finished, you will find a "GTA Car Tracker" application on your device.
+`apple-magnifier://install?url=<URL_to_IPA>`
 
-4. If this app has not appeared, that's a stock iOS bug, reboot your device and the app will appear.
+在未安装 TrollStore (1.3+) 的设备上，这只会打开放大镜应用程序。
 
-5. Launch the app, and tap "Install TrollStore"
+＃＃ 特征
 
-6. Wait a few seconds, your device should respring and TrollStore will be installed.
+IPA 内的二进制文件可以具有任意权利，使用 ldid 和您想要的权利（`ldid -S<path/to/entitlements.plist> <path/to/binary>`）对它们进行伪造，并且 TrollStore 将在退出时保留权利他们在安装时使用假根证书。这为您提供了很多可能性，其中一些将在下面进行解释。
 
-7. You can now either delete the "GTA Car Tracker" app, or register it as the persistence helper by opening it and tapping the option at the bottom. If you do this, don't delete the app. 
+### 禁止的权利
 
-8. Open the TrollStore app and press "Install ldid" in the Settings tab, then read the information under "Persistence", and install the Persistence Helper into a system app if you want persistence (not needed if you registered the GTA Car Tracker app as the persistence helper in step 7).
-
-9. Done, you can now share IPA files with TrollStore and they will be permanently installed on your device.
-
-## Installing TrollStore (Jailbreak)
-
-Supports jailbroken devices running 14.0 and above.
-
-### Guide
-
-1. Open your package manager, and make sure Havoc repo (https://havoc.app) is added under Sources, then search for "TrollStore Helper" and install it.
-
-2. After the installation, respring and a "TrollHelper" app should be on your home screen, launch it.
-
-3. Launch the app, tap "Install TrollStore"
-
-4. Wait a few seconds, your device should respring and TrollStore will be installed.
-
-5. Open the TrollStore app and press "Install ldid" in the Settings tab, then read the information under "Persistence", the TrollHelper app on the home screen will be your persistence helper.
-
-6. Done, you can now share IPA files with TrollStore and they will be permanently installed on your device.
-
-## Updating TrollStore
-
-When a new TrollStore update is available, a button to install it will appear at the top in the TrollStore settings. After tapping the button, TrollStore will automatically download the update, install it, and respring.
-
-Alternatively (if anything goes wrong), you can download the TrollStore.tar file under Releases and open it in TrollStore, TrollStore will install the update and respring.
-
-## Uninstalling an app
-
-Apps installed from TrollStore can only be uninstalled from TrollStore itself, tap an app or swipe it to the right in the 'Apps' tab to delete it.
-
-## Persistence Helper
-
-The CoreTrust bug used in TrollStore is only enough to install "System" apps, this is because FrontBoard has an additional security check (it calls libmis) every time before a user app is launched. Unfortunately it is not possible to install new "System" apps that stay through an icon cache reload. Therefore, when iOS reloads the icon cache, all TrollStore installed apps including TrollStore itself will revert back to "User" state and will no longer launch.
-
-The only way to work around this is to install a persistence helper into a system app, this helper can then be used to reregister TrollStore and its installed apps as "System" so that they become launchable again, an option for this is available in TrollStore settings.
-
-On jailbroken iOS 14 when TrollHelper is used for installation, it is located in /Applications and will persist as a "System" app through icon cache reloads, therefore TrollHelper is used as the persistence helper on iOS 14.
-
-## Features
-
-The binaries inside an IPA can have arbitrary entitlements, fakesign them with ldid and the entitlements you want (`ldid -S<path/to/entitlements.plist> <path/to/binary>`) and TrollStore will preserve the entitlements when resigning them with the fake root certificate on installation. This gives you a lot of possibilities, some of which are explained below.
-
-### Banned entitlements
-
-iOS 15 on A12+ has banned the following three entitlements related to running unsigned code, these are impossible to get without a PPL bypass, apps signed with them will crash on launch.
+A12+ 上的 iOS 15 禁止了以下三项与运行未签名代码相关的权利，如果没有 PPL 绕过，这些权利是不可能获得的，使用它们签名的应用程序将在启动时崩溃。
 
 `com.apple.private.cs.debugger`
 
-`dynamic-codesigning`
+`动态代码设计`
 
 `com.apple.private.skip-library-validation`
 
-### Unsandboxing
+### 取消沙箱
 
-Your app can run unsandboxed using one of the following entitlements:
+您的应用程序可以使用以下权利之一以非沙盒方式运行：
 
-```
+```xml
 <key>com.apple.private.security.container-required</key>
-<false/>
-```
+<假/>
+````
 
-```
+```xml
 <key>com.apple.private.security.no-container</key>
-<true/>
-```
+<真/>
+````
 
-```
+```xml
 <key>com.apple.private.security.no-sandbox</key>
-<true/>
-```
+<真/>
+````
 
-The third one is recommended if you still want a sandbox container for your application.
+如果您仍然需要为应用程序使用沙箱容器，建议使用第三种。
 
-You might also need the platform-application entitlement in order for these to work properly:
+您可能还需要平台应用程序权利才能使它们正常工作：
 
-```
-<key>platform-application</key>
-<true/>
-```
+```xml
+<key>平台应用</key>
+<真/>
+````
 
-Please note that the platform-application entitlement causes side effects such as some parts of the sandbox becoming tighter, so you may need additional private entitlements to circumvent that. (For example afterwards you need an exception entitlement for every single IOKit user client class you want to access).
+请注意，平台应用程序权限会导致副作用，例如沙箱的某些部分变得更严格，因此您可能需要额外的私有权限来规避这种情况。（例如，之后您需要为要访问的每个 IOKit 用户客户端类提供例外权利）。
 
-### Root Helpers
+为了使具有“com.apple.private.security.no-sandbox”和“platform-application”的应用程序能够访问其自己的数据容器，您可能需要额外的权利：
 
-When your app is not sandboxed, you can spawn other binaries using posix_spawn, you can also spawn binaries as root with the following entitlement:
+```xml
+<key>com.apple.private.security.storage.AppDataContainers</key>
+<真/>
+````
 
-```
+### 根助手
+
+当您的应用程序未沙盒时，您可以使用 posix_spawn 生成其他二进制文件，您还可以使用以下权利以 root 身份生成二进制文件：
+
+```xml
 <key>com.apple.private.persona-mgmt</key>
-<true/>
-```
+<真/>
+````
 
-Because a root binary needs special permissions, you need to specify all your root binaries in the Info.plist of your application like so:
+您还可以将自己的二进制文件添加到应用程序包中。
 
-```
-<key>TSRootBinaries</key>
-<array>
-    <string>roothelper1</string>
-    <string>some/nested/roothelper</string>
-</array>
-```
+之后，您可以使用 TSUtil.m 中的 [spawnRoot 函数](./Shared/TSUtil.m#L77) 以 root 身份生成二进制文件。
 
-Note: The paths in the TSRootBinaries array are relative to the location of the Info.plist, you can also include this key in other bundles such as app plugins.
+### 使用 TrollStore 无法实现的事情
 
-Afterwards you can use the [spawnRoot function in TSUtil.m](./Shared/TSUtil.m#L74) to spawn the binary as root.
+- 获得适当的平台化（`TF_PLATFORM`/`CS_PLATFORMIZED`）
+- 生成启动守护进程（需要“CS_PLATFORMIZED”）
+- 将调整注入系统进程（需要“TF_PLATFORM”、用户态 PAC 旁路和 PMAP 信任级别旁路）
 
-### Things that are not possible using TrollStore
+## 学分和延伸阅读
 
-- Getting proper platformization / `CS_PLATFORMIZED`
-- Spawning a launch daemon (Would need `CS_PLATFORMIZED`)
-- Injecting a tweak into a system process (Would need `CS_PLATFORMIZED`, a userland PAC bypass and a PMAP trust level bypass)
+[@LinusHenze](https://twitter.com/LinusHenze/) - 发现了允许 TrollStore 工作的 CoreTrust 错误。
 
-## Credits and Further Reading
+[Fugu15 演示](https://youtu.be/rPTifU1lG7Q)
 
-[@LinusHenze](https://twitter.com/LinusHenze/) - Found the CoreTrust bug that allows TrollStore to work.
-
-[Fugu15 Presentation](https://youtu.be/NIyKNjNNB5Q?t=3046)
-
-[Write-Up on the CoreTrust bug with more information](https://worthdoingbadly.com/coretrust/).
+[撰写有关 CoreTrust 错误的更多信息](https://worthdoingbadly.com/coretrust/)。
